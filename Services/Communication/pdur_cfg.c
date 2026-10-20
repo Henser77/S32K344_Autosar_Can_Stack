@@ -84,6 +84,22 @@ extern void Dcm_RxIndication(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
  *  否则 CanIf 报一次发送确认，PduR 会反查出两条路径，给 COM 报两次确认，
  *  而 COM 只发了一次 —— 语义就错了。
  *================================================================================================*/
+/*==================================================================================================
+ *  ▼▼▼ 示例区开始：TX 路由表 + RX 路由表
+ *      路由关系来自"车窗 / 电池 / 大端测试"演示工程，**新项目必须整体替换**。
+ *
+ *      这是全工程**唯一同时引用上下两层符号**的文件：
+ *          SrcPduId   ← 发起方的 PDU 编号（TX 方向是 COM，RX 方向是 CanIf）
+ *          DestPduId  ← 接收方的 PDU 编号（TX 方向是 CanIf，RX 方向是 COM）
+ *      符号名写错 → 编译报 undeclared；数值写错 → 运行期静默丢弃。
+ *
+ *      替换时同步：
+ *        □ Services/Communication/pdur_cfg.h  PDUR_TX_PATH_COUNT / PDUR_RX_PATH_COUNT
+ *        □ Services/Communication/com_cfg.h   ComConf_ComTxPdu_N / ComConf_ComRxPdu_N
+ *        □ EcuAbstraction/canif_cfg.h         CanIfConf_TxPdu_N / CanIfConf_RxPdu_N
+ *        □ 扇出时 DestCount 必须与 Dests 数组项数一致（末尾断言会检查）
+ *      配套说明见 TEMPLATE.md §三。
+ *================================================================================================*/
 static const PduR_TxDestConfigType PduR_TxDests_Com0[] = { { CanIfConf_TxPdu_0 } };
 static const PduR_TxDestConfigType PduR_TxDests_Com1[] = { { CanIfConf_TxPdu_1 },
                                                            { CanIfConf_TxPdu_2 } };   /* ← 1:N 扇出 */
@@ -136,6 +152,11 @@ static const PduR_RxPathConfigType PduR_RxPaths[] =
     {  CanIfConf_RxPdu_2,               1U,         PduR_RxDests_CanIf2 },
     {  CanIfConf_RxPdu_3,               2U,         PduR_RxDests_CanIf3 },     /* 扇出：COM + Dcm */
 };
+
+/*==================================================================================================
+ *  ▲▲▲ 示例区结束
+ *      以下为顶层配置对象与编译期断言，**不需要改**（它们是机械汇总）
+ *================================================================================================*/
 
 /*==================================================================================================
  *                                  顶层配置对象

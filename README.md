@@ -6,6 +6,9 @@
 > 这不是移植官方 AUTOSAR 栈，而是**按 AUTOSAR 的分层思想自己写一遍**，
 > 目的是把"每一层管什么、层与层之间怎么接、数据怎么流动"学透。
 >
+> **这份工程是要当"模板"复用的。** 开新项目时照
+> **[TEMPLATE.md](TEMPLATE.md)** 走（复制流程、7 步替换清单、隐形约束、错误对照表）。
+>
 > 详细设计与参数归属见 **[CONFIG_GUIDE.md](CONFIG_GUIDE.md)**；
 > Det / 符号化 / 自检的改动记录见 **[CHANGES_Det_Symbolization.md](CHANGES_Det_Symbolization.md)**。
 
