@@ -1084,8 +1084,8 @@ typedef char Can_TxObjectCountAssert[
 g_BswCheckStatus.ErrorCount      /* 0 = 全部通过 */
 g_BswCheckStatus.LastErrorId     /* 最后一个错误编号 */
 g_BswCheckStatus.LastInstance    /* 最后一处出问题的表项下标 */
-g_BswCheckStatus.CheckedCanIf    /* 检查了几条 CanIf PDU */
-g_BswCheckStatus.CheckedComSig   /* 检查了几个 COM 信号 */
+g_BswCheckStatus.CheckedCanIf    /* 检查了几条 CanIf PDU（发送 4 + 接收 4 = 8） */
+g_BswCheckStatus.CheckedComSig   /* 检查了几个 COM 信号（发送 8 + 接收 9 = 17） */
 ```
 
 #### 6.15.4 三道防线的边界（诚实说明）
@@ -1418,10 +1418,11 @@ Application/DoorLock/app_doorlock.c     ← 只调用 Rte_*，不碰 COM/CAN
 
 | 项 | 说明 |
 |---|---|
-| COM 枚举与信号表可能失步 | 手工维护，无编译期断言（见 §6.11） |
+| ~~COM 枚举与信号表可能失步~~ | ✅ **已解决**：`Com_SignalCountAssert` + `Com_SignalIdMaxAssert` 编译期强制（见 §6.15.2） |
 | `txInProgress` 无超时保护 | 发送确认一旦丢失，该 PDU 永久停发 |
 | 无单元测试入库 | 主机侧测试是临时的，不在工程内 |
 | RTE 是手写替身 | 无 runnable 事件触发、无多 SWC 通信、无模式管理、无 ExclusiveArea |
+| ~~运行期自检未上板验证~~ | ✅ **已验证**：故意制造 WindowPos/LockState 位重叠 → `ErrorCount=2`、`LastErrorId=0x23`、`LastInstance=3`，Det 同步记录 2 条；改回后 `ErrorCount=0` |
 
 ### 10.5 两个已知设计问题（待修）
 

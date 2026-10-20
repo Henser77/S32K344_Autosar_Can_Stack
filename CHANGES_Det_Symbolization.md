@@ -693,9 +693,31 @@ CANIF_DEV_ERROR_DETECT = STD_OFF  → .o 4292 字节，Det 符号 0 个
 Det 本体占用：Flash 2,636 字节 + RAM 1,928 字节
 ```
 
-### 4.5 ⏳ 尚未验证
+### 4.5 运行期自检上板验证 ✅
 
-**运行期自检（`bswcheck.c`）没有在板子上跑过**。验证方法见 `CONFIG_GUIDE.md` §6.15.3。
+**测试方法**：把 `Com_Signals[]` 里 `COM_SIG_WINDOW_POS` 的 `BitPosition` 从 `1U` 改成 `8U`
+（与 `LockState` 的 bit8 抢位），烧录后观察。
+
+| 场景 | `g_BswCheckStatus` | `Det_numEventErrors[0]` | 判定 |
+|---|---|---|---|
+| **配置正确** | `ErrorCount=0`<br>`CheckedCanIf=4`<br>`CheckedComSig=17` | `0` | ✅ 不误报 |
+| **位重叠（改坏）** | `ErrorCount=2`<br>`LastErrorId=35`（0x23）<br>`LastInstance=3` | `2` | ✅ 抓到，且抓全 |
+
+**为什么是 2 条而不是 1 条**：改成 `bit8 / 7位` 后区间是 `[8,15)`，同时压住了
+`LockState [8,10)` 和 `VehicleSpeed [10,26)` —— 检查把**所有重叠对**都找出来了，
+不是"发现一处就停"。
+
+```
+bit:  8  9  10 11 12 13 14 15
+      ├──┤                        LockState    [8,10)
+      ├────────────────┤           WindowPos    [8,15)
+            ├──────────────────┤  VehicleSpeed [10,26)
+```
+
+**两处记录交叉印证**：自检自己的 `g_BswCheckStatus` 和 Det 的统一记录数字一致，
+说明"检查逻辑 → 状态结构 → Det 上报"整条链都通。
+
+**恢复方法**：`git checkout -- Services/Communication/com_cfg.c`，重新烧录确认回到 `ErrorCount=0`。
 
 ---
 

@@ -95,6 +95,8 @@ static void BswCheck_CanIfVsMcal(void)
         Can_HwHandleType hrh = CanIf_Config.RxPdus[i].Hrh;
         boolean          found = FALSE;
 
+        g_BswCheckStatus.CheckedCanIf++;      /* 与 1a 一起构成"全部 CanIf PDU"的计数 */
+
         for (j = 0U; j < Can_Config.RxObjectCount; j++)
         {
             if (Can_Config.RxObjects[j].Hrh == hrh)

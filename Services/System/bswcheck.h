@@ -52,8 +52,8 @@ typedef struct
     uint16 ErrorCount;      /**< 发现的配置问题总数（0 = 全部通过） */
     uint16 LastErrorId;     /**< 最后一个错误编号 */
     uint16 LastInstance;    /**< 最后一处出问题的表项下标 */
-    uint16 CheckedCanIf;    /**< 检查了多少条 CanIf PDU */
-    uint16 CheckedComSig;   /**< 检查了多少个 COM 信号 */
+    uint16 CheckedCanIf;    /**< 检查了多少条 CanIf PDU（发送 + 接收） */
+    uint16 CheckedComSig;   /**< 检查了多少个 COM 信号（发送 + 接收） */
 } BswCheck_StatusType;
 
 /** @brief 自检状态（上电后立刻可读） */
